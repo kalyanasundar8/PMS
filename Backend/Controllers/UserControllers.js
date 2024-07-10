@@ -76,4 +76,22 @@ const signin = asyncHandler(async (req, res) => {
   }
 });
 
-export { signup, signin };
+// Method   POST
+// Route    /api/users/profile
+const profile = asyncHandler(async (req, res) => {
+  const { id } = req.query;
+
+  const userExists = await User.findOne({ _id: id });
+
+  if (userExists) {
+    return res.status(200).json({
+      id: userExists._id,
+      userName: userExists.userName,
+      email: userExists.email,
+    });
+  } else {
+    return res.status(400).json({ err: "There is no user in this id" });
+  }
+});
+
+export { signup, signin, profile };
