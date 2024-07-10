@@ -6,6 +6,7 @@ import dotenv from "dotenv";
 dotenv.config();
 // Routes
 import userRoutes from "./Routes/UserRoutes.js";
+import expenseRoutes from "./Routes/ExpenseRoutes.js";
 // Config
 import PMSDB from "./Config/PMSDB.js";
 
@@ -19,6 +20,7 @@ app.use(parser.json());
 app.use(parser.urlencoded({ extended: true }));
 
 app.use("/api/users", userRoutes);
+app.use("/api/expenses", expenseRoutes);
 
 app.listen(port, (req, res) => {
     console.log(`App listening to port ${port} :)`.blue);

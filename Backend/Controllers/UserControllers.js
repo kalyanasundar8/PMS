@@ -5,11 +5,12 @@ import bcrypt from "bcryptjs";
 import User from "../Models/UserModel.js";
 // Services
 import generateToken from "../Services/GenerateToken.js";
+import TotalBalanace from "../Models/TotalBalanceModel.js";
 
 // Method   POST
 // Route    /api/users/signup
 const signup = asyncHandler(async (req, res) => {
-  const { userName, email, password, confirmPassword } = req.body;
+  const { userName, email, password } = req.body;
 
   //   Email validation
   const emailFormat = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
@@ -32,14 +33,20 @@ const signup = asyncHandler(async (req, res) => {
       password: hashedPassword,
     });
 
+    const totalBalance = await TotalBalanace.create({
+      userId: user._id,
+      balance: 0,
+    });
+
     return res.status(200).json({
       id: user._id,
       userName: user.userName,
       email: user.email,
+      accountBalance: totalBalance.balance,
       token: generateToken(user._id),
     });
   } else {
-    return res.status(400).json({ err: "Email not already exists" });
+    return res.status(400).json({ err: "Email already exists" });
   }
 });
 
