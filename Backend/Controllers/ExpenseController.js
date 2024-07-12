@@ -110,4 +110,27 @@ const updateExpense = asyncHandler(async (req, res) => {
   });
 });
 
-export { addExpense, updateExpense };
+// Method   DELETE
+// Route    /api/expense/deleteExpense
+const deleteExpense = asyncHandler(async (req, res) => {
+  const { expenseId, userId } = req.query;
+
+  const expenseExists = await Expense.findOne({ _id: expenseId });
+  const balanceExists = await TotalBalanace.findOne({ userId });
+
+  if (expenseExists.amount > balanceExists.balance) {
+    const newBalance = expenseExists.amount + balanceExists.balance;
+    balanceExists.balance = newBalance;
+    await balanceExists.save();
+    const del = await Expense.findByIdAndDelete({ _id: expenseId });
+    return res.status(200).json({ mssg: "Expense deleted successfuly" });
+  } else if (expenseExists.amount < balanceExists.balance) {
+    const newBalance = balanceExists.balance - expenseExists.amount;
+    balanceExists.balance = newBalance;
+    await balanceExists.save();
+    const del = await Expense.findByIdAndDelete({ _id: expenseId });
+    return res.status(200).json({ mssg: "Expense deleted successfuly" });
+  }
+});
+
+export { addExpense, updateExpense, deleteExpense };
