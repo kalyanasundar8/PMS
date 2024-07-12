@@ -67,4 +67,65 @@ const getIncomes = asyncHandler(async (req, res) => {
   return res.status(200).json(incomes);
 });
 
-export { addIncome, getIncomes };
+// Method   PUT
+// Route    /api/incomes/updateIncome
+const updateIncome = asyncHandler(async (req, res) => {
+  const { incomeId, userId, amount, source, description, date } = req.body;
+
+  const incomeExists = await Income.findOne({ _id: incomeId }); // Check the income is created by the user or exists in the DB
+
+  if (!incomeExists) {
+    return res.status(400).json({ err: "The income is not exists" });
+  }
+
+  const totalBalance = await TotalBalance.findOne({
+    userId: incomeExists.userId,
+  });
+
+  if (!totalBalance) {
+    return res.status(400).json({ err: "Total balance not found" });
+  }
+
+  const oldAmount = incomeExists.amount; // 100
+  console.log("Old amount: " + oldAmount);
+  const newAmount = amount !== undefined ? amount : oldAmount; // newamount = 120
+  console.log("New amount: " + newAmount);
+  let newBalance;
+
+  if (newAmount > oldAmount) {
+    const balanceDifference = newAmount - oldAmount; // 120 - 20 = 100
+    newBalance = totalBalance.balance + balanceDifference; // 100 + 100 = 120
+    console.log("GT" + newBalance);
+  } else if (newAmount < oldAmount) {
+    const balanceDifference = oldAmount - newAmount; // 100 - 20 = 80
+    newBalance = totalBalance.balance - balanceDifference; // 100 - 80 = 20
+    console.log("LT" + newBalance);
+  }
+
+  //Update expense
+  incomeExists.amount = amount !== undefined ? amount : incomeExists.amount;
+  incomeExists.source =
+    source !== undefined ? source : incomeExists.source;
+  incomeExists.description =
+    description !== undefined ? description : incomeExists.description;
+  incomeExists.date = date !== undefined ? date : incomeExists.date;
+  await incomeExists.save();
+
+  // Update total balance
+  totalBalance.balance = newBalance;
+  await totalBalance.save();
+
+  return res.status(200).json({
+    message: "Expense updated successfully",
+    expense: {
+      id: incomeExists._id,
+      amount: incomeExists.amount,
+      source: incomeExists.source,
+      description: incomeExists.description,
+      date: incomeExists.date,
+    },
+    newBalance: totalBalance.balance,
+  });
+});
+
+export { addIncome, getIncomes, updateIncome };
