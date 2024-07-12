@@ -13,6 +13,8 @@ const addIncome = asyncHandler(async (req, res) => {
     return res.status(400).json({ err: "Please enter all fields" });
   } // Check all the fields are filled by the user
 
+  const amountNumber = parseFloat(amount);
+
   const userExists = await User.findOne({ _id: userId }); // Check the user in the DB
 
   if (!userExists) {
@@ -25,14 +27,14 @@ const addIncome = asyncHandler(async (req, res) => {
 
   const income = await Income.create({
     userId,
-    amount,
+    amount: amountNumber,
     source,
     description,
     date,
   }); // Create a income in the DB
 
   const totalBalance = await TotalBalance.findOne({ userId }); // Find the existing balance for the user
-  totalBalance.balance = totalBalance.balance + amount; // Add the new income to the existing balance amount
+  totalBalance.balance = parseFloat(totalBalance.balance) + amountNumber; // Add the new income to the existing balance amount
   await totalBalance.save(); // Save it in the DB
 
   return res.status(200).json({
@@ -49,4 +51,20 @@ const addIncome = asyncHandler(async (req, res) => {
   }); // Return the response if income is created
 });
 
-export { addIncome };
+// Method   GET
+// Route    /api/incomes/getIncomes
+const getIncomes = asyncHandler(async (req, res) => {
+  const { userId } = req.query;
+
+  const userExists = await User.findById({ _id: userId }); // Check the user exists in the DB
+
+  if (!userExists) {
+    return res.status(400).json({ err: "The user not exists in our records" });
+  } // Send a response if user not exists
+
+  const incomes = await Income.find({ userId }); // Get all incomes for the given userID
+
+  return res.status(200).json(incomes);
+});
+
+export { addIncome, getIncomes };
