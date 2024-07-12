@@ -1,6 +1,8 @@
 import asyncHandler from "express-async-handler";
+// Models
 import TotalBalanace from "../Models/TotalBalanceModel.js";
 import Expense from "../Models/ExpenseModel.js";
+import User from "../Models/UserModel.js";
 
 // Method   POST
 // Route    /api/expense/addExpense
@@ -47,6 +49,22 @@ const addExpense = asyncHandler(async (req, res) => {
       .status(400)
       .json({ err: "Something went wrong!, Please try again later" });
   }
+});
+
+// Method   GET
+// Route    /api/expense/getExpenses
+const getExpenses = asyncHandler(async (req, res) => {
+  const { userId } = req.query;
+
+  const userExists = await User.findOne({ _id: userId });
+
+  if (!userExists) {
+    return res.status(400).json({ err: "No user in this ID" });
+  }
+
+  const expenses = await Expense.find({ userId });
+
+  return res.status(200).json(expenses);
 });
 
 // Method   PUT
@@ -133,4 +151,4 @@ const deleteExpense = asyncHandler(async (req, res) => {
   }
 });
 
-export { addExpense, updateExpense, deleteExpense };
+export { addExpense, getExpenses, updateExpense, deleteExpense };
