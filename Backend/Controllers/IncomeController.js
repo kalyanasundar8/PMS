@@ -130,4 +130,35 @@ const updateIncome = asyncHandler(async (req, res) => {
   });
 });
 
-export { addIncome, getIncomes, updateIncome };
+// Method   DELETE
+// Route    /api/incomes/deleteIncome
+const deleteIncome = asyncHandler(async (req, res) => {
+  const { incomeId, userId } = req.query;
+
+  const incomeExists = await Income.findOne({ _id: incomeId });
+
+  if (!incomeExists) {
+    return res.status(400).json({ err: "Income ID is not exists" });
+  } // Check the income is exists in the DB
+
+  const totalBalance = await TotalBalance.findOne({ userId }); // Find the user exists in the DB
+
+  const balanceDifference = totalBalance.balance - incomeExists.amount; // Find the difference between totalbalance and income amount
+
+  const newBalance = balanceDifference - totalBalance.balance;
+
+  totalBalance.balance = newBalance;
+  await totalBalance.save();
+
+  const deleteIncome = await Income.findByIdAndDelete({ _id: incomeId });
+
+  if (deleteIncome) {
+    return res.status(200).json({ mssg: "Income deleted and balance updated" });
+  } else {
+    return res
+      .status(400)
+      .json({ err: "Something went wrong! While deleting income" });
+  }
+});
+
+export { addIncome, getIncomes, updateIncome, deleteIncome };
