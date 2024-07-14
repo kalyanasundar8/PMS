@@ -86,26 +86,28 @@ const updateIncome = asyncHandler(async (req, res) => {
     return res.status(400).json({ err: "Total balance not found" });
   }
 
-  const oldAmount = incomeExists.amount; // 100
+  const oldAmount = incomeExists.amount; // 40
   console.log("Old amount: " + oldAmount);
-  const newAmount = amount !== undefined ? amount : oldAmount; // newamount = 120
+  const newAmount = amount !== undefined ? amount : oldAmount; // newamount = 50
   console.log("New amount: " + newAmount);
   let newBalance;
+  console.log(newBalance);
 
   if (newAmount > oldAmount) {
-    const balanceDifference = newAmount - oldAmount; // 120 - 20 = 100
-    newBalance = totalBalance.balance + balanceDifference; // 100 + 100 = 120
-    console.log("GT" + newBalance);
+    const balanceDifference = newAmount - oldAmount; // 50 - 40 = 10
+    newBalance = totalBalance.balance + balanceDifference; // 30 + 10 = 40
+    console.log("GT - Difference: " + balanceDifference);
+    console.log("GT - New balance: " + newBalance);
   } else if (newAmount < oldAmount) {
-    const balanceDifference = oldAmount - newAmount; // 100 - 20 = 80
-    newBalance = totalBalance.balance - balanceDifference; // 100 - 80 = 20
-    console.log("LT" + newBalance);
+    const balanceDifference = oldAmount - newAmount; // 40 - 120 = -60
+    newBalance = totalBalance.balance - balanceDifference; // 60 + 60 = 120
+    console.log("LT - Difference: " + balanceDifference);
+    console.log("LT - New balance: " + newBalance);
   }
 
   //Update expense
   incomeExists.amount = amount !== undefined ? amount : incomeExists.amount;
-  incomeExists.source =
-    source !== undefined ? source : incomeExists.source;
+  incomeExists.source = source !== undefined ? source : incomeExists.source;
   incomeExists.description =
     description !== undefined ? description : incomeExists.description;
   incomeExists.date = date !== undefined ? date : incomeExists.date;

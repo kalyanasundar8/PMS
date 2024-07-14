@@ -32,7 +32,7 @@ const addExpense = asyncHandler(async (req, res) => {
       date,
     });
 
-    const newBalance = totalBalance - amount;
+    const newBalance = totalBalance - amount; // 100 - 40 = 60
 
     await TotalBalanace.findOneAndUpdate(
       { userId },
