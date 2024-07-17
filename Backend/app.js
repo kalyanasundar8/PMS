@@ -12,6 +12,7 @@ import incomeRoutes from "./Routes/IncomeRoutes.js";
 import PMSDB from "./Config/PMSDB.js";
 //Middlewares
 import { errorHandler } from "./Middlewares/ErrorHandler.js";
+import cors from "cors";
 
 
 const app = express();
@@ -22,6 +23,8 @@ const port = process.env.PORT;
 
 app.use(parser.json());
 app.use(parser.urlencoded({ extended: true }));
+
+app.use(cors());
 
 app.use(errorHandler);
 app.use("/api/users", userRoutes);
