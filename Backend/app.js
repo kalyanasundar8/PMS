@@ -10,6 +10,8 @@ import expenseRoutes from "./Routes/ExpenseRoutes.js";
 import incomeRoutes from "./Routes/IncomeRoutes.js";
 // Config
 import PMSDB from "./Config/PMSDB.js";
+//Middlewares
+import { errorHandler } from "./Middlewares/ErrorHandler.js";
 
 
 const app = express();
@@ -21,6 +23,7 @@ const port = process.env.PORT;
 app.use(parser.json());
 app.use(parser.urlencoded({ extended: true }));
 
+app.use(errorHandler);
 app.use("/api/users", userRoutes);
 app.use("/api/expenses", expenseRoutes);
 app.use("/api/incomes", incomeRoutes);
