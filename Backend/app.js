@@ -17,14 +17,14 @@ import cors from "cors";
 
 const app = express();
 
+app.use(cors());
+
 PMSDB();
 
 const port = process.env.PORT;
 
 app.use(parser.json());
 app.use(parser.urlencoded({ extended: true }));
-
-app.use(cors());
 
 app.use(errorHandler);
 app.use("/api/users", userRoutes);
