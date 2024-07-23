@@ -6,6 +6,8 @@ import User from "../Models/UserModel.js";
 import TotalBalanace from "../Models/TotalBalanceModel.js";
 // Services
 import generateToken from "../Services/GenerateToken.js";
+import Income from "../Models/IncomeModel.js";
+import Expense from "../Models/ExpenseModel.js";
 
 // Method   POST
 // Route    /api/users/signup
@@ -96,16 +98,65 @@ const profile = asyncHandler(async (req, res) => {
 
   const userExists = await User.findOne({ _id: id }); // Find the user exists in the User document
 
+  const incomeExists = await Income.find({ userId: id }); // Find the income exists for the user
+
+  if (!incomeExists) {
+    return res.status(400).json({ err: "Income not exists for this user" });
+  }
+
+  const expenseExists = await Expense.find({ userId: id }); // Find the expense exists for the user
+
+  if (!expenseExists) {
+    return res.status(400).json({ err: "Expense not exists for this user" });
+  }
+
+  const totalBalance = await TotalBalanace.findOne({ userId: id });
+
+  const totalExpense = expenseExists.reduce((accumulator, currentValue) => {
+    return accumulator + currentValue.amount;
+  }, 0); // Method for adding allexpense together
+
+  const totalIncome = incomeExists.reduce((accumulator, currentValue) => {
+    return accumulator + currentValue.amount;
+  }, 0); // Method for adding allincome together
+
+  const groupByMonth = (items) => {
+    const monthTotals = items.reduce((acc, item) => {
+      const month = item.date.toLocaleString("default", { month: "long" });
+      if (!acc[month]) {
+        acc[month] = 0;
+      }
+
+      acc[month] += item.amount;
+      return acc;
+    }, {});
+
+    const result = Object.keys(monthTotals).map((month) => {
+      return { month, salary: monthTotals[month] };
+    });
+
+    return result;
+  };
+
+  const incomeByMonth = groupByMonth(incomeExists);
+  const expenseByMonth = groupByMonth(expenseExists);
+
   if (userExists) {
     // Only show if the userExists
     return res.status(200).json({
       id: userExists._id,
       userName: userExists.userName,
       email: userExists.email,
+      totalIncome: incomeExists.length === 0 ? 0 : totalIncome,
+      totalExpense: incomeExists.length === 0 ? 0 : totalExpense,
+      totalBalance: totalBalance.balance,
+      incomeByMonth: incomeByMonth,
+      expenceByMonth: expenseByMonth,
     });
   } else {
     return res.status(400).json({ err: "No user in this id" });
   } // Return error response if the user not exists in the User document
 });
+
 
 export { signup, signin, profile };

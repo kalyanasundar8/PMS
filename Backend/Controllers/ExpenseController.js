@@ -3,6 +3,7 @@ import asyncHandler from "express-async-handler";
 import TotalBalanace from "../Models/TotalBalanceModel.js";
 import Expense from "../Models/ExpenseModel.js";
 import User from "../Models/UserModel.js";
+import groupByMonth from "../Services/GroupByMonth.js";
 
 // Method   POST
 // Route    /api/expense/addExpense
@@ -151,4 +152,30 @@ const deleteExpense = asyncHandler(async (req, res) => {
   }
 });
 
-export { addExpense, getExpenses, updateExpense, deleteExpense };
+// Method   GET
+// Route    /api/incomes/getExpenseByMonth
+const getExpenseByMonth = asyncHandler(async (req, res) => {
+  const { userId } = req.query;
+
+  const userExists = await User.findOne({ _id: userId }); // Find the user exists in the User document
+
+  const expenseExists = await Expense.find({ userId: userId }); // Find the income exists for the user
+
+  if (!expenseExists) {
+    return res.status(400).json({ err: "Expense not exists for this user" });
+  }
+
+  const expenseByMonth = groupByMonth(expenseExists);
+
+  if (userExists) {
+    // Only show if the userExists
+    return res.status(200).json({
+      id: userExists._id,
+      expense: expenseByMonth,
+    });
+  } else {
+    return res.status(400).json({ err: "No user in this id" });
+  } // Return error response if the user not exists in the User document
+});
+
+export { addExpense, getExpenses, updateExpense, deleteExpense, getExpenseByMonth };

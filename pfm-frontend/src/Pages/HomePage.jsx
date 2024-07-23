@@ -8,7 +8,6 @@ import {
   faUser,
 } from "@fortawesome/free-solid-svg-icons";
 import IEBcard from "../components/IEBcard";
-import DashBoardChart from "../components/DashBoardChart";
 
 const HomePage = () => {
   return (
@@ -48,9 +47,8 @@ const HomePage = () => {
         </ul>
       </nav>
       {/* Sidenavabr end */}
-      <section>
+      <section className="">
         <IEBcard />
-        <DashBoardChart />
       </section>
     </div>
   );

@@ -1,7 +1,7 @@
 import React from "react";
 import {
-  BarChart,
-  Bar,
+  LineChart,
+  Line,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -10,41 +10,39 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
-const DashBoardChart = () => {
+const DashBoardChart = ({ tabIndex }) => {
+  if (tabIndex === 1) {
+    console.log("Income");
+  } else if (tabIndex === 2) {
+    console.log("Expense");
+  }
+
   const data = [
-    { month: "January", salary: 3000 },
-    { month: "February", salary: 3200 },
-    { month: "March", salary: 3500 },
-    { month: "April", salary: 3700 },
-    { month: "May", salary: 4000 },
-    { month: "June", salary: 4500 },
-    { month: "July", salary: 4700 },
-    { month: "August", salary: 5000 },
-    { month: "September", salary: 5300 },
-    { month: "October", salary: 5500 },
-    { month: "November", salary: 5700 },
-    { month: "December", salary: 6000 },
+    { month: "January", salary: 4000 },
+    { month: "February", salary: 5000 },
+    { month: "March", salary: 2000 },
   ];
   return (
-    <div>
+    <div className="">
       <ResponsiveContainer width="100%" height={400}>
-        <BarChart
+        <LineChart
           data={data}
-          margin={{
-            top: 0,
-            right: 30,
-            left: 20,
-            bottom: 5,
-          }}
+          margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
         >
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="month" />
           <YAxis />
           <Tooltip />
           <Legend />
-          <Bar dataKey="salary" fill="#8884d8" />
-        </BarChart>
+          <Line
+            type="monotone"
+            dataKey="salary"
+            stroke="#8884d8"
+            activeDot={{ r: 8 }}
+          />
+        </LineChart>
       </ResponsiveContainer>
+      <h1 className="text-center">Overall Income and expense</h1>
     </div>
   );
 };
