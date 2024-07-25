@@ -7,9 +7,11 @@ import {
   faMoneyBill1Wave,
   faUser,
 } from "@fortawesome/free-solid-svg-icons";
-import IEBcard from "../components/IEBcard";
+import ProfilePage from "./ProfilePage";
 
 const HomePage = () => {
+  const user = JSON.parse(localStorage.getItem("user"));
+  
   return (
     <div>
       {/* Top navigation bar */}
@@ -18,9 +20,9 @@ const HomePage = () => {
           <FontAwesomeIcon icon={faListDots} />
           <h1 className="text-xl font-bold font-titlefont">PFM</h1>
         </div>
-        <div>
-          <h1>pfmuser</h1>
-          <span></span>
+        <div className="flex items-center space-x-3">
+          <h1>{ user ? user.userName : "PFMUser"}</h1>
+          <p className="text-orange-500 bg-orange-100 border-2 border-orange-300 rounded-full px-3 py-1">{ user ? user.userName.charAt(0) : ""}</p>
         </div>
       </nav>
       {/* Top navigation bar end */}
@@ -48,7 +50,7 @@ const HomePage = () => {
       </nav>
       {/* Sidenavabr end */}
       <section className="">
-        <IEBcard />
+        <ProfilePage />
       </section>
     </div>
   );

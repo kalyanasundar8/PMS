@@ -29,3 +29,16 @@ export const userSignin = (data) => {
     }
   }
 };
+
+export const userProfile = (data) => {
+  try {
+    const response = api.post("/users/profile", data);
+    return response;
+  } catch (error) {
+    if (error) {
+      throw error.response;
+    } else {
+      throw new Error(error.message);
+    }
+  }
+};

@@ -153,7 +153,7 @@ const deleteExpense = asyncHandler(async (req, res) => {
 });
 
 // Method   GET
-// Route    /api/incomes/getExpenseByMonth
+// Route    /api/expense/getExpenseByMonth
 const getExpenseByMonth = asyncHandler(async (req, res) => {
   const { userId } = req.query;
 

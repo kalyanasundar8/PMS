@@ -94,7 +94,7 @@ const signin = asyncHandler(async (req, res) => {
 // Method   POST
 // Route    /api/users/profile
 const profile = asyncHandler(async (req, res) => {
-  const { id } = req.query;
+  const { id } = req.body;
 
   const userExists = await User.findOne({ _id: id }); // Find the user exists in the User document
 

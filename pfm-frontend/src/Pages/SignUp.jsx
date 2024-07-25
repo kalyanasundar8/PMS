@@ -7,7 +7,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { useDispatch, useSelector } from "react-redux";
 import { setUser, setLoading, setError } from "../Redux/actions/Auth.action";
 // Routes
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 // Services
 import { userSignup } from "../services/AuthServices";
 // Icons
@@ -21,7 +21,7 @@ import LoaderService from "../services/LoaderService";
 const SignUp = () => {
   const dispatch = useDispatch();
   const { isLoading, isError } = useSelector((state) => state.user);
-  console.log(isError, isLoading);
+  const navigate = useNavigate();
 
   const validationSchema = Yup.object().shape({
     userName: Yup.string().required("Username is required"),
@@ -49,8 +49,13 @@ const SignUp = () => {
     dispatch(setLoading(true));
     try {
       const response = await userSignup(data);
-      dispatch(setUser(response.data));
-      console.log(response);
+
+      if (response.status === 200) {
+        localStorage.setItem("user", JSON.stringify(response?.data));
+        navigate("/");
+        window.location.reload();
+        dispatch(setUser(response.data));
+      }
     } catch (error) {
       dispatch(setError(error.response.data.err));
       setTimeout(() => {
